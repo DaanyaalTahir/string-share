@@ -1,1 +1,1 @@
-# react-native-template
+# string-share
