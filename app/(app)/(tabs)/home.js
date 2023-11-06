@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Text, Heading, Box } from "@gluestack-ui/themed";
-import UserPost from "../../../components/UserPost";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import Comment from "../../../components/Comment";
+import PostSection from "../../../components/PostSection";
 function home() {
   const [posts, setPosts] = useState([
     {
@@ -41,47 +38,7 @@ function home() {
     },
   ]);
 
-  const [comments, setComments] = useState([]);
-
-  const snapPoints = ["50%", "80"];
-  const sheetRef = useRef(null);
-  const openBottomSheet = (comments) => {
-    console.log(comments);
-    setComments(comments);
-    sheetRef.current.snapToIndex(1);
-  };
-
-  useEffect(() => {
-    sheetRef?.current.close();
-  }, [sheetRef]);
-
-  return (
-    <Box style={{ height: "100%" }}>
-      {posts.map((post) => {
-        return (
-          <UserPost
-            key={post.postId}
-            post={post}
-            openBottomSheet={openBottomSheet}
-            setComments={setComments}
-          />
-        );
-      })}
-      <BottomSheet
-        snapPoints={snapPoints}
-        ref={sheetRef}
-        enablePanDownToClose={true}
-        index={-1}
-      >
-        <BottomSheetView style={{ flex: 1, paddingLeft: 20, paddingRight: 20 }}>
-          <Heading size="md">Comments</Heading>
-          {comments?.map((comment) => {
-            return <Comment key={comment.uuid} comment={comment} />;
-          })}
-        </BottomSheetView>
-      </BottomSheet>
-    </Box>
-  );
+  return <PostSection posts={posts} />;
 }
 
 export default home;

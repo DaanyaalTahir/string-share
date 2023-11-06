@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Center,
   Input,
@@ -17,6 +18,14 @@ import { router } from "expo-router";
 
 export default function SignIn() {
   const { signIn } = useSession();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    signIn();
+  }, []);
+
   return (
     <Center style={globalStyles.formContainer}>
       <Heading size="4xl" bold={true} style={{ marginBottom: 20 }}>
@@ -30,7 +39,11 @@ export default function SignIn() {
         isReadOnly={false}
         style={globalStyles.formInput}
       >
-        <InputField placeholder="Username" />
+        <InputField
+          placeholder="Username"
+          value={username}
+          onChangeText={(val) => setUsername(val)}
+        />
       </Input>
       <Input
         variant="rounded"
@@ -40,7 +53,12 @@ export default function SignIn() {
         isReadOnly={false}
         style={globalStyles.formInput}
       >
-        <InputField placeholder="Password" type="password" />
+        <InputField
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChangeText={(val) => setPassword(val)}
+        />
       </Input>
       <Button
         size="md"

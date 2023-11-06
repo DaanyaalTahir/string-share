@@ -17,6 +17,7 @@ import {
   Heading,
 } from "@gluestack-ui/themed";
 import { Search } from "lucide-react-native";
+import { router } from "expo-router";
 const search = () => {
   const [results, setResults] = useState([
     {
@@ -55,7 +56,7 @@ const search = () => {
       </Input>
       {results.map((result) => {
         return (
-          <Box>
+          <Box key={result.username}>
             <HStack style={{ marginTop: 20, marginBottom: 20 }} space="md">
               <Box>
                 <Avatar bgColor="$primary600" size="md" borderRadius="$full">
@@ -64,7 +65,14 @@ const search = () => {
               </Box>
               <HStack style={{ justifyContent: "space-between", flex: 1 }}>
                 <VStack>
-                  <Heading size="xs">{result.username}</Heading>
+                  <Heading
+                    size="xs"
+                    onPress={() =>
+                      router.push(`/profile?username=${result.username}`)
+                    }
+                  >
+                    {result.username}
+                  </Heading>
                   <Text>{result.fullName}</Text>
                 </VStack>
 

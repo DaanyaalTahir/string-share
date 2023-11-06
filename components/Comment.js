@@ -15,6 +15,7 @@ import {
   Divider,
   Heading,
 } from "@gluestack-ui/themed";
+import { router } from "expo-router";
 
 const Comment = ({ comment }) => {
   return (
@@ -27,7 +28,14 @@ const Comment = ({ comment }) => {
         </Box>
         <HStack style={{ flex: 1 }}>
           <VStack>
-            <Heading size="xs">{comment.username}</Heading>
+            <Heading
+              size="xs"
+              onPress={() =>
+                router.push(`/profile?username=${comment.username}`)
+              }
+            >
+              {comment.username}
+            </Heading>
             <Text>{comment.comment}</Text>
           </VStack>
         </HStack>

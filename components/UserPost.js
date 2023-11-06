@@ -35,10 +35,6 @@ const UserPost = ({ post, openBottomSheet, setComments }) => {
 
   useEffect(() => {
     if (post.location) {
-      console.log({
-        latitude: parseFloat(post.location.latitude),
-        longitude: parseFloat(post.location.longitude),
-      });
       const reverseGeocode = async () => {
         const reverseGeocodedAddress = await reverseGeocodeAsync({
           latitude: parseFloat(post.location.latitude),
@@ -72,7 +68,12 @@ const UserPost = ({ post, openBottomSheet, setComments }) => {
 
         <Box width="$full" style={{ flex: 1 }}>
           <VStack width="$full">
-            <Heading size="xs">{post.username}</Heading>
+            <Heading
+              size="xs"
+              onPress={() => router.push(`/profile?username=${post.username}`)}
+            >
+              {post.username}
+            </Heading>
             <Text>{post.post}</Text>
             <HStack space="md">
               <Button variant="link">
