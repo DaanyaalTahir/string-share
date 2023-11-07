@@ -1,8 +1,11 @@
 import React from "react";
 import { useStorageState } from "./useStorageState";
-
+import axios from "axios";
+import { ENDPOINT } from "../globals";
+import { setAccessToken } from "./api";
+import { router } from "expo-router";
 const AuthContext = React.createContext<{
-  signIn: () => void;
+  signIn: (username, password) => void;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
@@ -26,9 +29,35 @@ export function SessionProvider(props) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
-          // Perform sign-in logic here
-          setSession("xxx");
+        signIn: (username, password) => {
+          const postData = new URLSearchParams();
+          postData.append("username", username);
+          postData.append("password", password);
+
+          // Define the request headers
+          const headers = {
+            accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+          };
+
+          // Define the URL for the request
+          const url = `${ENDPOINT}/token`;
+
+          // Perform the POST request
+          axios
+            .post(url, postData.toString(), { headers })
+            .then((response) => {
+              // Handle the successful response
+              const accessToken = response.data.access_token;
+              setAccessToken(accessToken);
+              setSession(accessToken);
+              router.replace("/");
+            })
+            .catch((error) => {
+              // Handle any errors that occurred during the request
+              const errorString = JSON.stringify(error, null, 2);
+              console.error("Error:", errorString);
+            });
         },
         signOut: () => {
           setSession(null);

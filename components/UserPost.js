@@ -17,20 +17,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react-native";
 import { reverseGeocodeAsync } from "expo-location";
 import { router } from "expo-router";
-
+import api from "../utils/api";
 const UserPost = ({ post, openBottomSheet, setComments }) => {
-  const [postComments, setPostComments] = useState([
-    {
-      uuid: 1,
-      username: "Batman",
-      fullName: "Bruce Wayne",
-      comment: "Fist comment!!",
-      avatar: undefined,
-      likes: 10,
-      datePosted: new Date().toISOString(),
-    },
-  ]);
-
   const [currentAddress, setCurrentAddress] = useState(null);
 
   useEffect(() => {
@@ -48,6 +36,15 @@ const UserPost = ({ post, openBottomSheet, setComments }) => {
       reverseGeocode();
     }
   }, []);
+
+  const displayComments = () => {
+    api
+      .get(`/client/comments?post_id=${post.post_id}`)
+      .then((res) => {
+        openBottomSheet(res.data);
+      })
+      .catch((err) => console.error(err));
+  };
 
   return (
     <Box>
@@ -74,23 +71,18 @@ const UserPost = ({ post, openBottomSheet, setComments }) => {
             >
               {post.username}
             </Heading>
-            <Text>{post.post}</Text>
+            <Text>{post.content}</Text>
             <HStack space="md">
               <Button variant="link">
                 <ButtonIcon as={Heart} color="$primary300" size="xl" />
               </Button>
-              <Button
-                variant="link"
-                onPress={() => {
-                  openBottomSheet(postComments);
-                }}
-              >
+              <Button variant="link" onPress={displayComments}>
                 <ButtonIcon as={MessageCircle} color="$primary300" size="xl" />
               </Button>
             </HStack>
             <HStack>
               <Text size="sm" color="$secondary300">
-                {post.replies} replies · {post.likes} likes
+                {post.comments} replies · {post.likes} likes
               </Text>
               {currentAddress && (
                 <HStack>

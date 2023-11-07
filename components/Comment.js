@@ -36,7 +36,7 @@ const Comment = ({ comment }) => {
             >
               {comment.username}
             </Heading>
-            <Text>{comment.comment}</Text>
+            <Text>{comment.content}</Text>
           </VStack>
         </HStack>
       </HStack>

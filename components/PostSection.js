@@ -13,14 +13,13 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import Comment from "./Comment";
 import UserPost from "./UserPost";
 import { SendHorizontal } from "lucide-react-native";
+import { ScrollView } from "react-native";
 const PostSection = ({ posts }) => {
   const [comments, setComments] = useState([]);
-
   const snapPoints = ["50%", "80"];
   const sheetRef = useRef(null);
 
   const openBottomSheet = (comments) => {
-    console.log(comments);
     setComments(comments);
     sheetRef.current.snapToIndex(1);
   };
@@ -30,16 +29,19 @@ const PostSection = ({ posts }) => {
   }, [sheetRef]);
   return (
     <Box style={{ height: "100%" }}>
-      {posts.map((post) => {
-        return (
-          <UserPost
-            key={post.postId}
-            post={post}
-            openBottomSheet={openBottomSheet}
-            setComments={setComments}
-          />
-        );
-      })}
+      <ScrollView style={{ flex: 1 }}>
+        {posts.map((post) => {
+          return (
+            <UserPost
+              key={post.post_id}
+              post={post}
+              openBottomSheet={openBottomSheet}
+              setComments={setComments}
+            />
+          );
+        })}
+      </ScrollView>
+
       <BottomSheet
         snapPoints={snapPoints}
         ref={sheetRef}
@@ -59,7 +61,7 @@ const PostSection = ({ posts }) => {
           </HStack>
 
           {comments?.map((comment) => {
-            return <Comment key={comment.uuid} comment={comment} />;
+            return <Comment key={comment.comment_id} comment={comment} />;
           })}
         </BottomSheetView>
       </BottomSheet>

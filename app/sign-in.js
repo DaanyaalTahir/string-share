@@ -19,12 +19,12 @@ import { router } from "expo-router";
 export default function SignIn() {
   const { signIn } = useSession();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("lleece0");
+  const [password, setPassword] = useState("lleece0");
 
-  useEffect(() => {
-    signIn();
-  }, []);
+  // useEffect(() => {
+  //   router.replace("/");
+  // }, []);
 
   return (
     <Center style={globalStyles.formContainer}>
@@ -68,10 +68,7 @@ export default function SignIn() {
         isFocusVisible={false}
         borderRadius="$full"
         onPress={() => {
-          signIn();
-          // Navigate after signing in. You may want to tweak this to ensure sign-in is
-          // successful before navigating.
-          router.replace("/");
+          signIn(username, password);
         }}
       >
         <ButtonText>LogIn </ButtonText>

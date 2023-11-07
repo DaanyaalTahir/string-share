@@ -1,7 +1,7 @@
 import { Redirect, Stack } from "expo-router";
 import { Text } from "react-native";
 import { useSession } from "../../utils/ctx";
-
+import { setAccessToken } from "../../utils/api";
 export default function AppLayout() {
   const { session, isLoading } = useSession();
 
@@ -16,6 +16,8 @@ export default function AppLayout() {
     // On web, static rendering will stop here as the user is not authenticated
     // in the headless Node process that the pages are rendered in.
     return <Redirect href="/sign-in" />;
+  } else {
+    setAccessToken(session);
   }
 
   // This layout can be deferred because it's not the root layout.
