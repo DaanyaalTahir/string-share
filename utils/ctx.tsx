@@ -24,7 +24,7 @@ export function useSession() {
 }
 
 export function SessionProvider(props) {
-  const [[isLoading, session], setSession] = useStorageState("session");
+  const [[isLoading, session], setSession] = useStorageState("string-share");
 
   return (
     <AuthContext.Provider

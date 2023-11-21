@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   Input,
@@ -18,6 +18,8 @@ import {
 } from "@gluestack-ui/themed";
 import { Search } from "lucide-react-native";
 import { router } from "expo-router";
+import api from "../../../utils/api";
+
 const search = () => {
   const [results, setResults] = useState([
     {
@@ -41,6 +43,12 @@ const search = () => {
       avatar: undefined,
     },
   ]);
+
+  useEffect(() => {
+    api.get("/client/search").then((res) => {
+      console.log(res.data);
+    });
+  }, []);
 
   return (
     <View style={{ padding: 20 }}>

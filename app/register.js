@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   Center,
   Input,
@@ -11,27 +11,49 @@ import {
   LinkText,
   Text,
   HStack,
+  Box,
 } from "@gluestack-ui/themed";
 import { LogIn } from "lucide-react-native";
 import { useSession } from "../utils/ctx";
 import globalStyles from "../styles/globalStyles";
 import { router } from "expo-router";
+import YoutubePlayer from "react-native-youtube-iframe";
 
-export default function SignIn() {
-  const { signIn } = useSession();
+const register = () => {
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [username, setUsername] = useState("lleece0");
-  const [password, setPassword] = useState("lleece0");
-
-  // useEffect(() => {
-  //   router.replace("/");
-  // }, []);
+  const [playing, setPlaying] = useState(false);
+  const onStateChange = useCallback((state) => {
+    if (state === "ended") {
+      setPlaying(false);
+      Alert.alert("video has finished playing!");
+    }
+  }, []);
+  const togglePlaying = useCallback(() => {
+    setPlaying((prev) => !prev);
+  }, []);
 
   return (
     <Center style={globalStyles.formContainer}>
       <Heading size="4xl" bold={true} style={{ marginBottom: 20 }}>
         StringShare
       </Heading>
+      <Input
+        variant="rounded"
+        size="md"
+        isDisabled={false}
+        isInvalid={false}
+        isReadOnly={false}
+        style={globalStyles.formInput}
+      >
+        <InputField
+          placeholder="Full Name"
+          value={fullName}
+          onChangeText={(val) => setFullName(val)}
+        />
+      </Input>
       <Input
         variant="rounded"
         size="md"
@@ -72,16 +94,25 @@ export default function SignIn() {
           signIn(username, password);
         }}
       >
-        <ButtonText>LogIn </ButtonText>
-        <ButtonIcon as={LogIn} />
+        <ButtonText>Register </ButtonText>
       </Button>
-      <HStack marginTop={20}>
-        <Text>Don't have an account? </Text>
+      <HStack marginTop={20} marginBottom={20}>
+        <Text>Already have an account? </Text>
 
-        <Link onPress={() => router.push("/register")}>
-          <LinkText>Register</LinkText>
+        <Link onPress={() => router.push("/sign-in")}>
+          <LinkText>Sign In</LinkText>
         </Link>
       </HStack>
+      <YoutubePlayer
+        height={300}
+        flex={1}
+        width="100%"
+        play={playing}
+        videoId={"vPlWDFtP0T0"}
+        onChangeState={onStateChange}
+      />
     </Center>
   );
-}
+};
+
+export default register;
