@@ -18,22 +18,49 @@ import { useSession } from "../utils/ctx";
 import globalStyles from "../styles/globalStyles";
 import { router } from "expo-router";
 import YoutubePlayer from "react-native-youtube-iframe";
-
+import api from "../utils/api";
+import axios from "axios";
+import { ENDPOINT } from "../globals";
 const register = () => {
+  const { signIn } = useSession();
+
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [playing, setPlaying] = useState(false);
+
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
       Alert.alert("video has finished playing!");
     }
   }, []);
-  const togglePlaying = useCallback(() => {
-    setPlaying((prev) => !prev);
-  }, []);
+
+  const onRegister = () => {
+    const postData = {
+      username,
+      full_name: fullName,
+      password,
+    };
+
+    // URL where you want to send the POST request
+    const url = `${ENDPOINT}/client/signup`; // Replace with your API endpoint
+
+    // Sending POST request with Axios
+    axios
+      .post(url, postData, {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        router.push("/sign-in");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   return (
     <Center style={globalStyles.formContainer}>
@@ -90,9 +117,7 @@ const register = () => {
         isDisabled={false}
         isFocusVisible={false}
         borderRadius="$full"
-        onPress={() => {
-          signIn(username, password);
-        }}
+        onPress={onRegister}
       >
         <ButtonText>Register </ButtonText>
       </Button>

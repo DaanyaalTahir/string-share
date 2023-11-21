@@ -71,18 +71,27 @@ const post = () => {
   const submitPost = async () => {
     try {
       const geocodedLocation = await geocodeAsync(postLocation);
-
+      // const imageBlob = await FileSystem.readAsStringAsync(image, {
+      //   encoding: FileSystem.EncodingType.Base64,
+      // });
+      // const blob = new Blob([imageBlob], { type: "image/jpeg" });
+      console.log(image);
+      const fileUri = image.uri.replace("file://", "");
       let formData = new FormData();
       formData.append("post", postText);
       formData.append("latitude", geocodedLocation[0].latitude);
       formData.append("longitude", geocodedLocation[0].longitude);
       formData.append("photo", {
-        type: "image/jpeg",
-        uri: image.uri,
+        type: "image/jpg",
+        uri: fileUri,
         name: "image.jpg",
       });
 
-      const response = await api.post(`/client/post`, formData);
+      const response = await api.post(`/client/post`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       // Handle the response from the server
       console.log("Server response:", response.data);
