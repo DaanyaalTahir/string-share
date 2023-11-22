@@ -14,8 +14,12 @@ import Comment from "./Comment";
 import UserPost from "./UserPost";
 import { SendHorizontal } from "lucide-react-native";
 import { ScrollView } from "react-native";
+import api from "../utils/api";
+
 const PostSection = ({ posts }) => {
   const [comments, setComments] = useState([]);
+  const [currentPost, setCurrentPost] = useState({});
+  const [newComment, setNewComment] = useState("");
   const snapPoints = ["50%", "80"];
   const sheetRef = useRef(null);
 
@@ -27,6 +31,24 @@ const PostSection = ({ posts }) => {
   useEffect(() => {
     sheetRef?.current.close();
   }, [sheetRef]);
+
+  const postComment = async () => {
+    try {
+      await api.post("/client/comment", {
+        post_id: currentPost.post_id,
+        content: newComment,
+      });
+      const updatedComments = await api.get(
+        `/client/comments?post_id=${currentPost.post_id}`
+      );
+
+      setComments(updatedComments.data);
+      setNewComment("");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Box style={{ height: "100%" }}>
       <ScrollView style={{ flex: 1 }}>
@@ -36,7 +58,7 @@ const PostSection = ({ posts }) => {
               key={post.post_id}
               post={post}
               openBottomSheet={openBottomSheet}
-              setComments={setComments}
+              setCurrentPost={setCurrentPost}
             />
           );
         })}
@@ -53,9 +75,17 @@ const PostSection = ({ posts }) => {
           <Heading size="md">Comments</Heading>
           <HStack style={{ alignItems: "flex-end" }} space="md">
             <Input variant="rounded" size="md" marginTop={10} flex={1}>
-              <InputField placeholder="Add your comment here..." />
+              <InputField
+                placeholder="Add your comment here..."
+                value={newComment}
+                onChangeText={(val) => setNewComment(val)}
+              />
             </Input>
-            <Button borderRadius="$full">
+            <Button
+              borderRadius="$full"
+              onPress={postComment}
+              disabled={newComment.length == 0}
+            >
               <ButtonIcon as={SendHorizontal} />
             </Button>
           </HStack>

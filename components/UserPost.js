@@ -18,9 +18,9 @@ import { Heart, MessageCircle, MoreHorizontal } from "lucide-react-native";
 import { reverseGeocodeAsync } from "expo-location";
 import { router } from "expo-router";
 import api from "../utils/api";
-const UserPost = ({ post, openBottomSheet, setComments }) => {
+const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
   const [currentAddress, setCurrentAddress] = useState(null);
-
+  const [heartColor, setHeartColor] = useState("$primary300");
   useEffect(() => {
     if (post.location) {
       const reverseGeocode = async () => {
@@ -42,6 +42,7 @@ const UserPost = ({ post, openBottomSheet, setComments }) => {
       .get(`/client/comments?post_id=${post.post_id}`)
       .then((res) => {
         openBottomSheet(res.data);
+        setCurrentPost(post);
       })
       .catch((err) => console.error(err));
   };
@@ -73,8 +74,8 @@ const UserPost = ({ post, openBottomSheet, setComments }) => {
             </Heading>
             <Text>{post.content}</Text>
             <HStack space="md">
-              <Button variant="link">
-                <ButtonIcon as={Heart} color="$primary300" size="xl" />
+              <Button variant="link" onPress={() => setHeartColor("$rose500")}>
+                <ButtonIcon as={Heart} color={heartColor} size="xl" />
               </Button>
               <Button variant="link" onPress={displayComments}>
                 <ButtonIcon as={MessageCircle} color="$primary300" size="xl" />

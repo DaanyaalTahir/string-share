@@ -1,15 +1,10 @@
-import { View, Text } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Center,
   Input,
   InputField,
   Button,
   ButtonText,
   ButtonIcon,
-  Heading,
-  Badge,
-  BadgeText,
   HStack,
   Box,
   Textarea,
@@ -18,24 +13,44 @@ import {
   InputIcon,
   VStack,
   Image,
+  ToastTitle,
+  Toast,
+  ToastDescription,
+  useToast,
 } from "@gluestack-ui/themed";
 import globalStyles from "../../../styles/globalStyles";
-import { MapPin } from "lucide-react-native";
+import { MapPin, CameraIcon } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import api from "../../../utils/api";
 import { Camera } from "expo-camera";
 import { geocodeAsync } from "expo-location";
 import { ENDPOINT } from "../../../globals";
+import { useSession } from "../../../utils/ctx";
+import Empty from "../../../assets/empty.jpg";
 
 const post = () => {
   let cameraRef = useRef();
+  const toast = useToast();
+  const { session } = useSession();
 
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(Empty);
   const [hasCameraPermission, setHasCameraPermission] = useState(undefined);
   const [showCamera, setShowCamera] = useState(false);
-  const [postText, setPostText] = useState("");
-  const [postLocation, setPostLocation] = useState("");
+  const [postText, setPostText] = useState("Test");
+  const [postLocation, setPostLocation] = useState("Toronto, ON");
+  const toastActions = {
+    success: {
+      actionType: "success",
+      title: "Success!",
+      description: "Your post was created successfully.",
+    },
+    error: {
+      actionType: "error",
+      title: "Error!",
+      description:
+        "There was an error processing your request. Please try again later.",
+    },
+  };
 
   useEffect(() => {
     (async () => {
@@ -45,7 +60,6 @@ const post = () => {
   }, []);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -71,34 +85,46 @@ const post = () => {
   const submitPost = async () => {
     try {
       const geocodedLocation = await geocodeAsync(postLocation);
-      // const imageBlob = await FileSystem.readAsStringAsync(image, {
-      //   encoding: FileSystem.EncodingType.Base64,
-      // });
-      // const blob = new Blob([imageBlob], { type: "image/jpeg" });
-      console.log(image);
-      const fileUri = image.uri.replace("file://", "");
-      let formData = new FormData();
-      formData.append("post", postText);
-      formData.append("latitude", geocodedLocation[0].latitude);
-      formData.append("longitude", geocodedLocation[0].longitude);
-      formData.append("photo", {
-        type: "image/jpg",
-        uri: fileUri,
-        name: "image.jpg",
-      });
-
-      const response = await api.post(`/client/post`, formData, {
+      const { latitude, longitude } = geocodedLocation[0];
+      const url = `${ENDPOINT}/client/post?post=${postText}&latitude=${latitude}&longitude=${longitude}`;
+      await FileSystem.uploadAsync(url, image.uri, {
+        fieldName: "photo",
+        httpMethod: "POST",
+        uploadType: FileSystem.FileSystemUploadType.MULTIPART,
         headers: {
-          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${session}`,
         },
       });
+      resetForm();
 
-      // Handle the response from the server
-      console.log("Server response:", response.data);
+      showToast(toastActions.success);
     } catch (error) {
-      // Handle any errors that occur during the POST request
       console.error("Error submitting post:", error);
+      showToast(toastActions.error);
     }
+  };
+
+  const resetForm = () => {
+    setImage(Empty);
+    setPostLocation("");
+    setPostText("");
+  };
+
+  const showToast = (action) => {
+    const { actionType, title, description } = action;
+    toast.show({
+      placement: "bottom",
+      render: ({ id }) => {
+        return (
+          <Toast nativeID={"toast-" + id} action={actionType} variant="solid">
+            <VStack space="xs">
+              <ToastTitle>{title}</ToastTitle>
+              <ToastDescription>{description}</ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
   };
 
   return (
@@ -107,19 +133,20 @@ const post = () => {
         <Camera
           style={{
             flex: 1,
-            justifyContent: "center",
-            alignContent: "flex-end",
-            alignItems: "flex-end",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            flexDirection: "column",
           }}
           ref={cameraRef}
         >
           <Button
-            size="md"
-            variant="outline"
             action="primary"
             onPress={takePicture}
+            borderRadius="$full"
+            size="xl"
+            marginBottom={20}
           >
-            <ButtonText>Take Picture</ButtonText>
+            <ButtonIcon as={CameraIcon} />
           </Button>
         </Camera>
       ) : (
@@ -182,9 +209,13 @@ const post = () => {
 
             <Image
               size="xl"
-              source={{
-                uri: image?.uri,
-              }}
+              source={
+                image.uri
+                  ? {
+                      uri: image.uri,
+                    }
+                  : image
+              }
               style={{
                 borderWidth: 2,
                 borderColor: "#737373",

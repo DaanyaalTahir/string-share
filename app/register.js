@@ -48,7 +48,7 @@ const register = () => {
 
     // Sending POST request with Axios
     axios
-      .post(url, postData, {
+      .post(url, JSON.stringify(postData), {
         headers: {
           accept: "application/json",
           "Content-Type": "application/json",
