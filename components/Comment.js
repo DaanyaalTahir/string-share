@@ -1,21 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Text,
-  Input,
-  InputSlot,
-  InputIcon,
-  InputField,
   HStack,
   Box,
   Avatar,
   AvatarFallbackText,
   VStack,
-  Button,
-  ButtonText,
   Divider,
   Heading,
+  AvatarImage,
 } from "@gluestack-ui/themed";
 import { router } from "expo-router";
+import { ENDPOINT } from "../globals";
 
 const Comment = ({ comment }) => {
   return (
@@ -24,6 +20,11 @@ const Comment = ({ comment }) => {
         <Box>
           <Avatar bgColor="$primary600" size="md" borderRadius="$full">
             <AvatarFallbackText>{comment.username}</AvatarFallbackText>
+            <AvatarImage
+              source={{
+                uri: `${ENDPOINT}/client/media/?url=${comment.avatar_url}`,
+              }}
+            />
           </Avatar>
         </Box>
         <HStack style={{ flex: 1 }}>

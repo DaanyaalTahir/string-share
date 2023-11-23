@@ -21,34 +21,31 @@ import { router } from "expo-router";
 import api from "../../../utils/api";
 
 const search = () => {
-  const [results, setResults] = useState([
-    {
-      username: "Robin",
-      fullName: "Robin Saliba",
-      avatar: undefined,
-    },
-    {
-      username: "Mass",
-      fullName: "Mass Wayne",
-      avatar: undefined,
-    },
-    {
-      username: "Lybia",
-      fullName: "Lyba George",
-      avatar: undefined,
-    },
-    {
-      username: "Hima",
-      fullName: "Hima ",
-      avatar: undefined,
-    },
-  ]);
+  const [results, setResults] = useState([]);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    api.get("/client/search").then((res) => {
-      console.log(res.data);
+    api.get("/client/search?search_query=").then((res) => {
+      setResults(res.data);
     });
   }, []);
+
+  const searchUser = () => {
+    api.get(`/client/search?search_query=${query}`).then((res) => {
+      setResults(res.data);
+    });
+  };
+
+  const followUser = (username) => {
+    api.post(`/client/follow?username=${username}`).then(() => {
+      const resultsCpy = [...results];
+      setResults(
+        resultsCpy.map((user) =>
+          user.username === username ? { ...user, following: true } : user
+        )
+      );
+    });
+  };
 
   return (
     <View style={{ padding: 20 }}>
@@ -60,7 +57,12 @@ const search = () => {
         <InputSlot pl="$3">
           <InputIcon as={Search} />
         </InputSlot>
-        <InputField placeholder="Search..." />
+        <InputField
+          placeholder="Search..."
+          onChangeText={(val) => setQuery(val)}
+          value={query}
+          onSubmitEditing={searchUser}
+        />
       </Input>
       {results.map((result) => {
         return (
@@ -81,11 +83,19 @@ const search = () => {
                   >
                     {result.username}
                   </Heading>
-                  <Text>{result.fullName}</Text>
+                  <Text>{result.full_name}</Text>
                 </VStack>
 
-                <Button size="md" variant="outline" action="primary">
-                  <ButtonText>Follow</ButtonText>
+                <Button
+                  size="md"
+                  variant="outline"
+                  action={result.following ? "secondary" : "primary"}
+                  onPress={() => followUser(result.username)}
+                  disabled={result.following}
+                >
+                  <ButtonText>
+                    {result.following ? "Following" : "Follow"}
+                  </ButtonText>
                 </Button>
               </HStack>
             </HStack>

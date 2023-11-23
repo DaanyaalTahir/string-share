@@ -10,23 +10,27 @@ import {
   ButtonIcon,
   Divider,
   Link,
-  ButtonText,
+  Image,
   LinkText,
+  AvatarImage,
 } from "@gluestack-ui/themed";
 import React, { useEffect, useRef, useState } from "react";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react-native";
 import { reverseGeocodeAsync } from "expo-location";
 import { router } from "expo-router";
 import api from "../utils/api";
+import { ENDPOINT } from "../globals";
+
 const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
   const [currentAddress, setCurrentAddress] = useState(null);
   const [heartColor, setHeartColor] = useState("$primary300");
+
   useEffect(() => {
-    if (post.location) {
+    if (post) {
       const reverseGeocode = async () => {
         const reverseGeocodedAddress = await reverseGeocodeAsync({
-          latitude: parseFloat(post.location.latitude),
-          longitude: parseFloat(post.location.longitude),
+          latitude: parseFloat(post.latitude),
+          longitude: parseFloat(post.longitude),
         });
         const { streetNumber, street, city, region, postalCode } =
           reverseGeocodedAddress[0];
@@ -61,11 +65,28 @@ const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
         <Box>
           <Avatar bgColor="$primary600" size="md" borderRadius="$full">
             <AvatarFallbackText>{post.username}</AvatarFallbackText>
+            <AvatarImage
+              source={{
+                uri: `${ENDPOINT}/client/media/?url=${post.avatar_url}`,
+              }}
+            />
           </Avatar>
         </Box>
 
         <Box width="$full" style={{ flex: 1 }}>
           <VStack width="$full">
+            <Image
+              source={`${ENDPOINT}/client/media/?url=${post.image_url}`}
+              size="2xl"
+              borderRadius="$md"
+              alt="post_image"
+              marginBottom={10}
+              style={{
+                borderWidth: 1,
+                borderColor: "#737373",
+                backgroundColor: "#DADADA",
+              }}
+            />
             <Heading
               size="xs"
               onPress={() => router.push(`/profile?username=${post.username}`)}
@@ -94,7 +115,7 @@ const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
                     }}
                     onPress={() => {
                       router.push(
-                        `/map?lat=${post.location.latitude}&lng=${post.location.longitude}`
+                        `/map?lat=${post.latitude}&lng=${post.longitude}`
                       );
                     }}
                   >
