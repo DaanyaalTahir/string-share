@@ -41,7 +41,7 @@ const search = () => {
       const resultsCpy = [...results];
       setResults(
         resultsCpy.map((user) =>
-          user.username === username ? { ...user, following: true } : user
+          user.username === username ? { ...user, is_following: true } : user
         )
       );
     });
@@ -89,12 +89,12 @@ const search = () => {
                 <Button
                   size="md"
                   variant="outline"
-                  action={result.following ? "secondary" : "primary"}
+                  action={result.is_following ? "secondary" : "primary"}
                   onPress={() => followUser(result.username)}
-                  disabled={result.following}
+                  disabled={result.is_following}
                 >
                   <ButtonText>
-                    {result.following ? "Following" : "Follow"}
+                    {result.is_following ? "Following" : "Follow"}
                   </ButtonText>
                 </Button>
               </HStack>
