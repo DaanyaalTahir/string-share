@@ -20,8 +20,8 @@ import { router } from "expo-router";
 export default function SignIn() {
   const { signIn } = useSession();
 
-  const [username, setUsername] = useState("lleece0");
-  const [password, setPassword] = useState("lleece0");
+  const [username, setUsername] = useState("lleece0@stringshare.ca");
+  const [password, setPassword] = useState("a");
 
   // useEffect(() => {
   //   router.replace("/");

@@ -75,18 +75,20 @@ const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
 
         <Box width="$full" style={{ flex: 1 }}>
           <VStack width="$full">
-            <Image
-              source={`${ENDPOINT}/client/media/?url=${post.image_url}`}
-              size="2xl"
-              borderRadius="$md"
-              alt="post_image"
-              marginBottom={10}
-              style={{
-                borderWidth: 1,
-                borderColor: "#737373",
-                backgroundColor: "#DADADA",
-              }}
-            />
+            {post.image_url != null && (
+              <Image
+                source={`${ENDPOINT}/client/media/?url=${post.image_url}`}
+                size="2xl"
+                borderRadius="$md"
+                alt="post_image"
+                marginBottom={10}
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#737373",
+                  backgroundColor: "#DADADA",
+                }}
+              />
+            )}
             <Heading
               size="xs"
               onPress={() => router.push(`/profile?username=${post.username}`)}
