@@ -15,11 +15,12 @@ import {
   ButtonText,
   Divider,
   Heading,
+  AvatarImage,
 } from "@gluestack-ui/themed";
 import { Search } from "lucide-react-native";
 import { router } from "expo-router";
 import api from "../../../utils/api";
-
+import { ENDPOINT } from "../../../globals";
 const search = () => {
   const [results, setResults] = useState([]);
   const [query, setQuery] = useState("");
@@ -66,11 +67,16 @@ const search = () => {
       </Input>
       {results.map((result) => {
         return (
-          <Box key={result.username}>
+          <Box key={`search_result_${result.username}`}>
             <HStack style={{ marginTop: 20, marginBottom: 20 }} space="md">
               <Box>
                 <Avatar bgColor="$primary600" size="md" borderRadius="$full">
                   <AvatarFallbackText>{result.username}</AvatarFallbackText>
+                  <AvatarImage
+                    source={{
+                      uri: `${ENDPOINT}/client/media/?url=${result.avatar_url}`,
+                    }}
+                  />
                 </Avatar>
               </Box>
               <HStack style={{ justifyContent: "space-between", flex: 1 }}>

@@ -17,7 +17,7 @@ function home() {
       });
   }, []);
 
-  return <PostSection posts={posts} />;
+  return <PostSection posts={posts} setPosts={setPosts} />;
 }
 
 export default home;

@@ -21,9 +21,14 @@ import { router } from "expo-router";
 import api from "../utils/api";
 import { ENDPOINT } from "../globals";
 
-const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
+const UserPost = ({ post, openBottomSheet, setCurrentPost, updatePosts }) => {
+  const likeColor = "$rose500";
+  const unlikeColor = "$primary300";
   const [currentAddress, setCurrentAddress] = useState(null);
-  const [heartColor, setHeartColor] = useState("$primary300");
+  const [heartColor, setHeartColor] = useState(
+    post.liked ? likeColor : unlikeColor
+  );
+  const [likes, setLikes] = useState(post.likes);
 
   useEffect(() => {
     if (post) {
@@ -47,6 +52,19 @@ const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
       .then((res) => {
         openBottomSheet(res.data);
         setCurrentPost(post);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const likePost = () => {
+    console.log("hello");
+    api
+      .post(`/client/like?post_id=${post.post_id}`)
+      .then((res) => {
+        setHeartColor(post.liked ? unlikeColor : likeColor);
+        const postCpy = { ...post, liked: !post.liked };
+        updatePosts(postCpy);
+        setLikes(postCpy.liked ? likes + 1 : likes - 1);
       })
       .catch((err) => console.error(err));
   };
@@ -97,7 +115,7 @@ const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
             </Heading>
             <Text>{post.content}</Text>
             <HStack space="md">
-              <Button variant="link" onPress={() => setHeartColor("$rose500")}>
+              <Button variant="link" onPress={likePost}>
                 <ButtonIcon as={Heart} color={heartColor} size="xl" />
               </Button>
               <Button variant="link" onPress={displayComments}>
@@ -106,7 +124,7 @@ const UserPost = ({ post, openBottomSheet, setCurrentPost }) => {
             </HStack>
             <HStack>
               <Text size="sm" color="$secondary300">
-                {post.comments} replies · {post.likes} likes
+                {post.comments} replies · {likes} likes
               </Text>
               {currentAddress && (
                 <HStack>

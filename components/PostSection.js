@@ -16,7 +16,7 @@ import { SendHorizontal } from "lucide-react-native";
 import { ScrollView } from "react-native";
 import api from "../utils/api";
 
-const PostSection = ({ posts }) => {
+const PostSection = ({ posts, setPosts }) => {
   const [comments, setComments] = useState([]);
   const [currentPost, setCurrentPost] = useState({});
   const [newComment, setNewComment] = useState("");
@@ -44,9 +44,19 @@ const PostSection = ({ posts }) => {
 
       setComments(updatedComments.data);
       setNewComment("");
+      updatePosts({ ...currentPost, comments: currentPost.comments + 1 });
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const updatePosts = (post) => {
+    const postsCpy = [...posts];
+    setPosts(
+      postsCpy.map((curPost) =>
+        curPost.post_id === post.post_id ? post : curPost
+      )
+    );
   };
 
   return (
@@ -59,6 +69,7 @@ const PostSection = ({ posts }) => {
               post={post}
               openBottomSheet={openBottomSheet}
               setCurrentPost={setCurrentPost}
+              updatePosts={updatePosts}
             />
           );
         })}
