@@ -1,3 +1,4 @@
+// Importing necessary components and functions from external libraries and files
 import React, { useState, useCallback, useRef } from "react";
 import {
   Center,
@@ -12,30 +13,37 @@ import {
   Text,
   HStack,
   Box,
-} from "@gluestack-ui/themed";
-import { LogIn } from "lucide-react-native";
-import { useSession } from "../utils/ctx";
-import globalStyles from "../styles/globalStyles";
-import { router } from "expo-router";
-import YoutubePlayer from "react-native-youtube-iframe";
-import api from "../utils/api";
-import axios from "axios";
-import { ENDPOINT } from "../globals";
-const register = () => {
+} from "@gluestack-ui/themed"; // Importing UI components from the GlueStack UI library
+import { LogIn } from "lucide-react-native"; // Importing LogIn icon from the Lucide library for the login button
+import { useSession } from "../utils/ctx"; // Importing useSession hook from a custom utility file
+import globalStyles from "../styles/globalStyles"; // Importing global styles
+import { router } from "expo-router"; // Importing router from Expo for navigation
+import YoutubePlayer from "react-native-youtube-iframe"; // Importing YoutubePlayer component for playing YouTube videos
+import api from "../utils/api"; // Importing utility functions for API calls
+import axios from "axios"; // Importing Axios for making HTTP requests
+import { ENDPOINT } from "../globals"; // Importing ENDPOINT constant from a global file
+import { Alert } from "react-native"; // Importing Alert component for displaying alerts
+
+// Functional component for rendering the registration screen
+const Register = () => {
+  // Accessing the signIn function from the useSession hook
   const { signIn } = useSession();
 
+  // State variables for managing user registration inputs and video playback
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [playing, setPlaying] = useState(false);
 
+  // Callback function for handling video state changes
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
-      Alert.alert("video has finished playing!");
+      Alert.alert("Video has finished playing!");
     }
   }, []);
 
+  // Function for handling user registration
   const onRegister = () => {
     const postData = {
       username,
@@ -55,6 +63,7 @@ const register = () => {
         },
       })
       .then((response) => {
+        // Navigating to the sign-in screen upon successful registration
         router.push("/sign-in");
       })
       .catch((error) => {
@@ -62,11 +71,14 @@ const register = () => {
       });
   };
 
+  // Rendering the registration form
   return (
     <Center style={globalStyles.formContainer}>
+      {/* Application heading */}
       <Heading size="4xl" bold={true} style={{ marginBottom: 20 }}>
         StringShare
       </Heading>
+      {/* Input field for full name */}
       <Input
         variant="rounded"
         size="md"
@@ -81,6 +93,7 @@ const register = () => {
           onChangeText={(val) => setFullName(val)}
         />
       </Input>
+      {/* Input field for username */}
       <Input
         variant="rounded"
         size="md"
@@ -95,6 +108,7 @@ const register = () => {
           onChangeText={(val) => setUsername(val)}
         />
       </Input>
+      {/* Input field for password */}
       <Input
         variant="rounded"
         size="md"
@@ -110,6 +124,7 @@ const register = () => {
           onChangeText={(val) => setPassword(val)}
         />
       </Input>
+      {/* Button for initiating the registration process */}
       <Button
         size="md"
         variant="solid"
@@ -121,13 +136,14 @@ const register = () => {
       >
         <ButtonText>Register </ButtonText>
       </Button>
+      {/* Hyperlink for navigating to the sign-in screen */}
       <HStack marginTop={20} marginBottom={20}>
         <Text>Already have an account? </Text>
-
         <Link onPress={() => router.push("/sign-in")}>
           <LinkText>Sign In</LinkText>
         </Link>
       </HStack>
+      {/* YoutubePlayer component for playing a YouTube video */}
       <YoutubePlayer
         height={300}
         flex={1}
@@ -140,4 +156,5 @@ const register = () => {
   );
 };
 
-export default register;
+// Exporting the Register component as the default export
+export default Register;
