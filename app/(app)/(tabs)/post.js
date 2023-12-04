@@ -28,16 +28,21 @@ import { ENDPOINT } from "../../../globals";
 import { useSession } from "../../../utils/ctx";
 import Empty from "../../../assets/empty.jpg";
 
-const post = () => {
+// Functional component for the post screen
+const PostScreen = () => {
+  // Ref for the camera component
   let cameraRef = useRef();
   const toast = useToast();
   const { session } = useSession();
 
+  // State variables
   const [image, setImage] = useState(Empty);
   const [hasCameraPermission, setHasCameraPermission] = useState(undefined);
   const [showCamera, setShowCamera] = useState(false);
   const [postText, setPostText] = useState("Test");
   const [postLocation, setPostLocation] = useState("Toronto, ON");
+
+  // Toast actions for success and error
   const toastActions = {
     success: {
       actionType: "success",
@@ -52,6 +57,7 @@ const post = () => {
     },
   };
 
+  // Request camera permissions on component mount
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermissionsAsync();
@@ -59,6 +65,7 @@ const post = () => {
     })();
   }, []);
 
+  // Pick image from gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -72,6 +79,7 @@ const post = () => {
     }
   };
 
+  // Take a picture using the camera
   const takePicture = async () => {
     let options = {
       quality: 0.5,
@@ -82,11 +90,17 @@ const post = () => {
     setShowCamera(false);
   };
 
+  // Submit the post to the server
   const submitPost = async () => {
     try {
+      // Get geocoded location for latitude and longitude
       const geocodedLocation = await geocodeAsync(postLocation);
       const { latitude, longitude } = geocodedLocation[0];
+
+      // Prepare the URL for the post request
       const url = `${ENDPOINT}/client/post?post=${postText}&latitude=${latitude}&longitude=${longitude}`;
+
+      // Upload the image and post data
       await FileSystem.uploadAsync(url, image.uri, {
         fieldName: "photo",
         httpMethod: "POST",
@@ -95,21 +109,28 @@ const post = () => {
           Authorization: `Bearer ${session}`,
         },
       });
+
+      // Reset the form after successful submission
       resetForm();
 
+      // Show success toast
       showToast(toastActions.success);
     } catch (error) {
       console.error("Error submitting post:", error);
+
+      // Show error toast
       showToast(toastActions.error);
     }
   };
 
+  // Reset the form
   const resetForm = () => {
     setImage(Empty);
     setPostLocation("");
     setPostText("");
   };
 
+  // Show toast with provided action
   const showToast = (action) => {
     const { actionType, title, description } = action;
     toast.show({
@@ -130,6 +151,7 @@ const post = () => {
   return (
     <>
       {showCamera ? (
+        // Camera View
         <Camera
           style={{
             flex: 1,
@@ -150,7 +172,9 @@ const post = () => {
           </Button>
         </Camera>
       ) : (
+        // Post Form View
         <Box style={globalStyles.formContainer}>
+          {/* Post Text */}
           <Textarea
             size="md"
             isReadOnly={false}
@@ -164,6 +188,8 @@ const post = () => {
               value={postText}
             />
           </Textarea>
+
+          {/* Post Location Input */}
           <Input backgroundColor="white" style={globalStyles.formInput}>
             <InputSlot pl="$3">
               <InputIcon as={MapPin} />
@@ -174,6 +200,8 @@ const post = () => {
               value={postLocation}
             />
           </Input>
+
+          {/* Image Selection and Camera Buttons */}
           <VStack
             style={{
               alignItems: "flex-start",
@@ -183,6 +211,7 @@ const post = () => {
             space="md"
           >
             <HStack space="lg">
+              {/* Select Image Button */}
               <Button
                 size="md"
                 variant="outline"
@@ -193,6 +222,8 @@ const post = () => {
               >
                 <ButtonText>Select Image</ButtonText>
               </Button>
+
+              {/* Show Camera Button if camera permission is granted */}
               {hasCameraPermission && (
                 <Button
                   size="md"
@@ -207,6 +238,7 @@ const post = () => {
               )}
             </HStack>
 
+            {/* Display selected image */}
             <Image
               size="xl"
               source={
@@ -226,6 +258,7 @@ const post = () => {
             />
           </VStack>
 
+          {/* Submit Post Button */}
           <Button
             size="md"
             width="$64"
@@ -244,4 +277,4 @@ const post = () => {
   );
 };
 
-export default post;
+export default PostScreen;

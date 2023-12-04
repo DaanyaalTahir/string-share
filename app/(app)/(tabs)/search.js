@@ -21,22 +21,28 @@ import { Search } from "lucide-react-native";
 import { router } from "expo-router";
 import api from "../../../utils/api";
 import { ENDPOINT } from "../../../globals";
-const search = () => {
+
+// Functional component for the search screen
+const SearchScreen = () => {
+  // State variables
   const [results, setResults] = useState([]);
   const [query, setQuery] = useState("");
 
+  // Fetch initial search results on component mount
   useEffect(() => {
     api.get("/client/search?search_query=").then((res) => {
       setResults(res.data);
     });
   }, []);
 
+  // Function to perform a user search based on the input query
   const searchUser = () => {
     api.get(`/client/search?search_query=${query}`).then((res) => {
       setResults(res.data);
     });
   };
 
+  // Function to follow a user and update the results accordingly
   const followUser = (username) => {
     api.post(`/client/follow?username=${username}`).then(() => {
       const resultsCpy = [...results];
@@ -50,6 +56,7 @@ const search = () => {
 
   return (
     <View style={{ padding: 20 }}>
+      {/* Search Input */}
       <Input
         backgroundColor="white"
         borderRadius="$lg"
@@ -65,11 +72,15 @@ const search = () => {
           onSubmitEditing={searchUser}
         />
       </Input>
+
+      {/* Display search results */}
       {results.map((result) => {
         return (
           <Box key={`search_result_${result.username}`}>
+            {/* User Information */}
             <HStack style={{ marginTop: 20, marginBottom: 20 }} space="md">
               <Box>
+                {/* User Avatar */}
                 <Avatar bgColor="$primary600" size="md" borderRadius="$full">
                   <AvatarFallbackText>{result.username}</AvatarFallbackText>
                   <AvatarImage
@@ -81,6 +92,7 @@ const search = () => {
               </Box>
               <HStack style={{ justifyContent: "space-between", flex: 1 }}>
                 <VStack>
+                  {/* Username and Full Name */}
                   <Heading
                     size="xs"
                     onPress={() =>
@@ -92,6 +104,7 @@ const search = () => {
                   <Text>{result.full_name}</Text>
                 </VStack>
 
+                {/* Follow Button */}
                 <Button
                   size="md"
                   variant="outline"
@@ -105,6 +118,8 @@ const search = () => {
                 </Button>
               </HStack>
             </HStack>
+
+            {/* Divider between search results */}
             <Divider my="$0.5" />
           </Box>
         );
@@ -113,4 +128,4 @@ const search = () => {
   );
 };
 
-export default search;
+export default SearchScreen;
