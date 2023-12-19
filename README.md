@@ -38,6 +38,11 @@ Below are some sample screenshots of the mobile application.
     <img src="https://github.com/DaanyaalTahir/string-share/blob/master/sample-images/post_page3.png" alt="post_page" height="400"/>
 </div>
 
+### Activity Page
+<div style="display: flex; justify-content: space-around;">
+    <img src="https://github.com/DaanyaalTahir/string-share/blob/master/sample-images/activity_page.png" alt="activity_page" height="400"/>
+</div>
+
 ### Account Page
 <div style="display: flex; justify-content: space-around;">
     <img src="https://github.com/DaanyaalTahir/string-share/blob/master/sample-images/account_page.png" alt="account_page" height="400"/>
