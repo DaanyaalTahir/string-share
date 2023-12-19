@@ -2,6 +2,7 @@
 String share is a Social Media application that allows users to connect with one another in a clean and interactive user interface. Users can create posts, search for other users, comment/like posts, view other user profiles, and view or edit their own profile. 
 
 ## 💻 Technologies
+Below are the technologies for the full-stack app (this repo is for the frontend):
 - react-native
 - fastAPI
 
